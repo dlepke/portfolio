@@ -5,6 +5,16 @@ const path = require("path");
 
 app.use(express.static(path.join(__dirname, "/public")));
 
+if (proccess.en.NODE_ENV === "production") {
+  app.use((req, res, next) => {
+    if (req.header("x-forwarded-proto") !== "https") {
+      res.redirect(`https://${req.header("host")}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/html/index.html"));
 });
